@@ -23,6 +23,13 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
   ai:
+    mcp:
+      server:
+        protocol: STREAMABLE
+        name: docmind
+        version: 1.0.0
+        instructions: >
+          DocMind provides semantic search over ingested documents.
     google:
       genai:
         api-key: ${GOOGLE_API_KEY}
