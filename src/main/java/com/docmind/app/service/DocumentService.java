@@ -3,10 +3,8 @@ package com.docmind.app.service;
 import com.docmind.app.entity.Document;
 import com.docmind.app.entity.OutboxEvent;
 import com.docmind.app.producer.DocumentEvent;
-import com.docmind.app.producer.DocumentEventProducer;
 import com.docmind.app.repository.DocumentRepository;
 import com.docmind.app.repository.OutboxEventRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +21,7 @@ public class DocumentService {
     private final ObjectMapper objectMapper;
 
     @Transactional
-    public Document createDocument(String fileName){
+    public Document createDocument(String fileName, String filePath){
         Document document = Document.builder()
                 .fileName(fileName)
                 .status("RECEIVED")
@@ -32,7 +30,7 @@ public class DocumentService {
         Document savedDocument = documentRepository.save(document);
 
         DocumentEvent documentEvent = new DocumentEvent(
-                savedDocument.getId(), savedDocument.getFileName(),"CREATE"
+                savedDocument.getId(), savedDocument.getFileName(),"CREATE",filePath
         );
 
         try{
@@ -56,11 +54,11 @@ public class DocumentService {
         return savedDocument;
     }
 
-    public void process(DocumentEvent event) {
-        Document document = documentRepository.findById(event.documentId())
+    public void markProcessed(Long documentId) {
+        Document document = documentRepository.findById(documentId)
                 .orElseThrow(() ->
                         new IllegalStateException(
-                                "Document not found: " + event.documentId()
+                                "Document not found: " + documentId
                         )
                 );
 
