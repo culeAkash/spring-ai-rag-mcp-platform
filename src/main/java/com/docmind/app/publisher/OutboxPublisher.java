@@ -1,7 +1,7 @@
-package com.docmind.app.service;
+package com.docmind.app.publisher;
 
+import com.docmind.app.constants.OutboxEventType;
 import com.docmind.app.entity.OutboxEvent;
-import com.docmind.app.producer.DocumentEvent;
 import com.docmind.app.repository.OutboxEventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -35,7 +35,7 @@ public class OutboxPublisher {
                         "document-events",
                         event.documentId().toString(),
                         event
-                );
+                ).get();// making this synchronous so that if kafka publishing fails, then db update doesn't occur
 
                 outboxEvent.setPublished(true);
 

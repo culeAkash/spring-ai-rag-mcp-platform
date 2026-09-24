@@ -1,5 +1,6 @@
 package com.docmind.app.entity;
 
+import com.docmind.app.constants.DocumentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,5 +21,6 @@ public class Document {
     private String fileName;
 
     @Column(nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private DocumentStatus status;
 }

@@ -1,8 +1,10 @@
 package com.docmind.app.service;
 
+import com.docmind.app.constants.DocumentStatus;
+import com.docmind.app.constants.OutboxEventType;
+import com.docmind.app.publisher.DocumentEvent;
 import com.docmind.app.entity.Document;
 import com.docmind.app.entity.OutboxEvent;
-import com.docmind.app.producer.DocumentEvent;
 import com.docmind.app.repository.DocumentRepository;
 import com.docmind.app.repository.OutboxEventRepository;
 import jakarta.transaction.Transactional;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -24,13 +27,13 @@ public class DocumentService {
     public Document createDocument(String fileName, String filePath){
         Document document = Document.builder()
                 .fileName(fileName)
-                .status("RECEIVED")
+                .status(DocumentStatus.RECEIVED)
                 .build();
 
         Document savedDocument = documentRepository.save(document);
 
         DocumentEvent documentEvent = new DocumentEvent(
-                savedDocument.getId(), savedDocument.getFileName(),"CREATE",filePath
+                UUID.randomUUID(),savedDocument.getId(), savedDocument.getFileName(),"CREATE",filePath
         );
 
         try{
@@ -62,7 +65,7 @@ public class DocumentService {
                         )
                 );
 
-        document.setStatus("PROCESSED");
+        document.setStatus(DocumentStatus.PROCESSED);
 
         documentRepository.save(document);
     }
